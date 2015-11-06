@@ -42,7 +42,7 @@ public class TesInaNLP {
 
 try {
 
-            System.out.println("Demo NLP Tools utk bahasa Indonesia");
+        System.out.println("Demo NLP Tools utk bahasa Indonesia");
         IndonesianSentenceFormalization formalizer = new IndonesianSentenceFormalization();
         System.out.println("*************************");
         System.out.println("Formalisasi Kata");
@@ -51,10 +51,10 @@ try {
         System.out.println(sentence);
         System.out.println(formalizer.formalizeSentence(sentence));
         
-            System.out.println("*************************");
-            System.out.println("Indonesian STEMMER");
+        System.out.println("*************************");
+        System.out.println("Indonesian STEMMER");
         
-            IndonesianStemmer stemmer = new IndonesianStemmer();
+        IndonesianStemmer stemmer = new IndonesianStemmer();
 
         String word = "memperbantukannya";
         System.out.println("Kata masukan:"+word);
