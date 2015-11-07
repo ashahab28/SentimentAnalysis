@@ -7,14 +7,18 @@
 package testStopWord;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Scanner;
-import java.util.Set;
 
 /**
  *
@@ -23,42 +27,45 @@ import java.util.Set;
 public class StopWords {
     //menghasilkan list kata-kata yang tidak penting yang akan dihapus
     public static ArrayList<String> getStopWordFromFile (String fileName) throws FileNotFoundException {
-        Scanner file = new Scanner (new File(fileName));
-        ArrayList<String> stopwords = new ArrayList<String>();
-        while (file.hasNext()) {
-            stopwords.add(file.next());
+        ArrayList<String> stopwords;
+        try (Scanner file = new Scanner (new File(fileName))) {
+            stopwords = new ArrayList<>();
+            while (file.hasNext()) {
+                stopwords.add(file.next());
+            }
         }
-        file.close();
         return stopwords;
     }
     
     //menghasilkan list tanda baca yang akan dihapus
     public static ArrayList<String> getPunctuation (String fileName) throws FileNotFoundException {
-        Scanner file = new Scanner (new File(fileName));
-        ArrayList<String> punctuation = new ArrayList<String>();
-        while (file.hasNext()) {
-            punctuation.add(file.next());
+        ArrayList<String> punctuation;
+        try (Scanner file = new Scanner (new File(fileName))) {
+            punctuation = new ArrayList<>();
+            while (file.hasNext()) {
+                punctuation.add(file.next());
+            }
         }
-        file.close();
         return punctuation;
     }
     
     //menghasilkan kata-kata seperti http, @
     public static ArrayList<String> getUnimportantWords (String fileName) throws FileNotFoundException {
-        Scanner file = new Scanner (new File(fileName));
-        ArrayList<String> unimportantWords = new ArrayList<String>();
-        while (file.hasNext()) {
-            unimportantWords.add(file.next());
+        ArrayList<String> unimportantWords;
+        try (Scanner file = new Scanner (new File(fileName))) {
+            unimportantWords = new ArrayList<>();
+            while (file.hasNext()) {
+                unimportantWords.add(file.next());
+            }
         }
-        file.close();
         return unimportantWords;
     }
     
     //mengecek sebuah kata apakah stopword atau bukan
     public static Boolean isStopWord (String word, ArrayList<String> stopWords) {
         boolean found = false;
-        for (int i=0; i<stopWords.size(); i++) {
-            if (word.equals(stopWords.get(i))) {
+        for (String stopWord : stopWords) {
+            if (word.equals(stopWord)) {
                 found = true;
                 break;
             }
@@ -70,8 +77,8 @@ public class StopWords {
     //sebuah kata dikatakan unimportant word jika terkandung unimportant word dalam kata tersebut, misalkan http, @
     public static Boolean isUnimportantWord (String word, ArrayList<String> unimportantWords) {
         boolean found = false;
-        for (int i=0; i<unimportantWords.size(); i++) {
-            if (word.contains(unimportantWords.get(i))) {
+        for (String unimportantWord : unimportantWords) {
+            if (word.contains(unimportantWord)) {
                 found = true;
                 break;
             }
@@ -81,11 +88,9 @@ public class StopWords {
     
     //menghasilkan kata-kata dari sebuah kalimat
     public static ArrayList<String> splitedWords (String sentence) {
-        ArrayList<String> wordList = new ArrayList<String>();
+        ArrayList<String> wordList = new ArrayList<>();
         String[] splited = sentence.split(" ");
-        for (String word : splited) {
-            wordList.add(word);
-        }
+        wordList.addAll(Arrays.asList(splited));
         return wordList;
     }
     
@@ -106,9 +111,9 @@ public class StopWords {
     // menghapus tanda baca pada list kata
     public static void removePunctuation(ArrayList<String> wordList, ArrayList<String> punctuation) {
         for (int i=0; i<wordList.size(); i++) {
-            for (int idxPunc=0; idxPunc<punctuation.size(); idxPunc++) {
-                if (wordList.get(i).contains(punctuation.get(idxPunc))) {
-                    String tempWord = wordList.get(i).replace(punctuation.get(idxPunc), "");
+            for (String punctuation1 : punctuation) {
+                if (wordList.get(i).contains(punctuation1)) {
+                    String tempWord = wordList.get(i).replace(punctuation1, "");
                     wordList.set(i, tempWord);
                 }
             }
@@ -136,18 +141,120 @@ public class StopWords {
         }
         
         String newSentence = "";
-        for(int i=0; i<wordList.size(); i++) {
-            newSentence = newSentence.concat(wordList.get(i) + " ");
+        for (String wordList1 : wordList) {
+            newSentence = newSentence.concat(wordList1 + " ");
         }
         return newSentence;
     }
     
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws FileNotFoundException, IOException {
         String input = "!! RT @Philoartspace: @pradewitch: Gak ada yang bandingin bagaimana Prabowo dan Jokowi memperlakukan pekerjanya?";
         System.out.println(input);
-        ArrayList<String> stopWords = getStopWordFromFile("C:/Users/Windy Amelia/Documents/NetBeansProjects/tesInaNLP/src/testStopWord/stopwords_id.txt");
-        ArrayList<String> punctuation = getPunctuation("C:/Users/Windy Amelia/Documents/NetBeansProjects/tesInaNLP/src/testStopWord/punctuation.txt");
-        ArrayList<String> unimportantWords = getUnimportantWords("C:/Users/Windy Amelia/Documents/NetBeansProjects/tesInaNLP/src/testStopWord/unimportantWords.txt");
+        // Classic Stopwords
+        ArrayList<String> stopWords = getStopWordFromFile("src/testStopWord/stopwords_id.txt");
+        ArrayList<String> punctuation = getPunctuation("src/testStopWord/punctuation.txt");
+        ArrayList<String> unimportantWords = getUnimportantWords("src/testStopWord/unimportantWords.txt");
         System.out.println(removeStopWords(input, stopWords, punctuation, unimportantWords));
+        
+        // Create a hashmap to save word occurence
+        Map<String, Integer> wordCounter = new HashMap<>();
+        
+        String csvFile = "Original Data/jokowi_sort_uniq.csv";
+	BufferedReader br = null;
+	String line;
+	String cvsSplitBy = ",";
+        String fileContent = "";
+	try {
+		br = new BufferedReader(new FileReader(csvFile));
+		while ((line = br.readLine()) != null) {
+		        // use comma as separator
+			String[] contents = line.split(cvsSplitBy);
+			String content = contents[0];
+                        content = removeStopWords(content, stopWords, punctuation, unimportantWords);
+                        //System.out.println(content);
+                        // Nanti diconcat sesuai dengan konteks dari textnya
+                        for(String word: content.split(" ")){
+                            if(wordCounter.containsKey(word)){
+                                Integer val = wordCounter.get(word) + 1;
+                                wordCounter.put(word, val);
+                            } else{
+                                wordCounter.put(word, 1);
+                            }
+                        }
+                        fileContent += content + "\n";
+		}
+	} catch (FileNotFoundException e) {
+	} catch (IOException e) {
+	} finally {
+		if (br != null) {
+			try {
+				br.close();
+			} catch (IOException e) {
+			}
+		}
+	}
+
+        // Write to file with first type
+        File file = new File("Filtered Data/Stopwords/classic_jokowi_filtered.txt");
+        FileWriter fw = new FileWriter(file.getAbsoluteFile());
+        try (BufferedWriter bw = new BufferedWriter(fw)) {
+            bw.write(fileContent);
+        }
+        
+        // Remove singleton var
+          ArrayList<String> singleTonWords = new ArrayList<>();
+//        for(Map.Entry<String, Integer> entry : wordCounter.entrySet()){
+//            System.out.printf("Key : %s and Value: %d %n", entry.getKey(), entry.getValue()); 
+//        }
+
+        Iterator it = wordCounter.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            if((Integer)pair.getValue() == 1){
+                System.out.println((String)pair.getKey());
+                singleTonWords.add((String)pair.getKey());
+            }
+            it.remove(); // avoids a ConcurrentModificationException
+        }
+        
+        fileContent = "";
+	try {
+		br = new BufferedReader(new FileReader(csvFile));
+		while ((line = br.readLine()) != null) {
+		        // use comma as separator
+			String[] contents = line.split(cvsSplitBy);
+			String content = contents[0];
+                        content = removeStopWords(content, singleTonWords, punctuation, unimportantWords);
+                        //System.out.println(content);
+                        // Nanti diconcat sesuai dengan konteks dari textnya
+                        for(String word: content.split("")){
+                            if(wordCounter.containsKey(word)){
+                                Integer val = wordCounter.get(word) + 1;
+                                wordCounter.put(word, val);
+                            } else{
+                                wordCounter.put(word, 0);
+                            }
+                        }
+                        fileContent += content + "\n";
+		}
+	} catch (FileNotFoundException e) {
+	} catch (IOException e) {
+	} finally {
+		if (br != null) {
+			try {
+				br.close();
+			} catch (IOException e) {
+			}
+		}
+	}
+        
+        // Write to file with second type
+        file = new File("Filtered Data/Stopwords/TF1_jokowi_filtered.txt");
+        fw = new FileWriter(file.getAbsoluteFile());
+        try (BufferedWriter bw = new BufferedWriter(fw)) {
+            bw.write(fileContent);
+        }
+        
+	System.out.println("Done");
     }
 }
