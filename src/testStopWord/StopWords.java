@@ -159,7 +159,7 @@ public class StopWords {
         // Create a hashmap to save word occurence
         Map<String, Integer> wordCounter = new HashMap<>();
         
-        String csvFile = "Original Data/jokowi_sort_uniq.csv";
+        String csvFile = "Filtered Data/Formalized&Stemmed/jokowi_sort_uniq.csv";
 	BufferedReader br = null;
 	String line;
 	String cvsSplitBy = ",";
@@ -181,7 +181,11 @@ public class StopWords {
                                 wordCounter.put(word, 1);
                             }
                         }
-                        fileContent += content + "\n";
+                        fileContent += content;
+                        for(int i = 1; i < contents.length; i++){
+                            fileContent += "," + contents[i];
+                        }
+                        fileContent += "\n";
 		}
 	} catch (FileNotFoundException e) {
 	} catch (IOException e) {
@@ -195,7 +199,7 @@ public class StopWords {
 	}
 
         // Write to file with first type
-        File file = new File("Filtered Data/Stopwords/classic_jokowi_filtered.txt");
+        File file = new File("Filtered Data/Stopwords/classic_jokowi_filtered.csv");
         FileWriter fw = new FileWriter(file.getAbsoluteFile());
         try (BufferedWriter bw = new BufferedWriter(fw)) {
             bw.write(fileContent);
@@ -203,9 +207,6 @@ public class StopWords {
         
         // Remove singleton var
           ArrayList<String> singleTonWords = new ArrayList<>();
-//        for(Map.Entry<String, Integer> entry : wordCounter.entrySet()){
-//            System.out.printf("Key : %s and Value: %d %n", entry.getKey(), entry.getValue()); 
-//        }
 
         Iterator it = wordCounter.entrySet().iterator();
         while (it.hasNext()) {
@@ -235,7 +236,11 @@ public class StopWords {
                                 wordCounter.put(word, 0);
                             }
                         }
-                        fileContent += content + "\n";
+                        fileContent += content;
+                        for(int i = 1; i < contents.length; i++){
+                            fileContent += "," + contents[i];
+                        }
+                        fileContent += "\n";
 		}
 	} catch (FileNotFoundException e) {
 	} catch (IOException e) {
@@ -249,7 +254,7 @@ public class StopWords {
 	}
         
         // Write to file with second type
-        file = new File("Filtered Data/Stopwords/TF1_jokowi_filtered.txt");
+        file = new File("Filtered Data/Stopwords/TF1_jokowi_filtered.csv");
         fw = new FileWriter(file.getAbsoluteFile());
         try (BufferedWriter bw = new BufferedWriter(fw)) {
             bw.write(fileContent);
