@@ -1,5 +1,5 @@
 # SentimentAnalysis
-Analysing Tweet on Jokowi
+Analysing Tweet on Internet Brand
 
 #Formalizer & Stemmer
 Yang masih kurang:

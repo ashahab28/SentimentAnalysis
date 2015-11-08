@@ -14,13 +14,15 @@ import java.io.IOException;
 public class Main {
     
     public static void main(String[] args) throws IOException {
-        String csv_in = "/Users/kanya/Dropbox/KANJEISTA/ITB/PERKULIAHAN/IF Semester 7/IF4072 NLP/Text/Tugas 3 Sentiment Analysis/Dataset & Referensi/jokowi_sort_uniq.csv";
-        String csv_out = "/Users/kanya/Dropbox/KANJEISTA/ITB/PERKULIAHAN/IF Semester 7/IF4072 NLP/Text/Tugas 3 Sentiment Analysis/SentimentAnalysis/dataset.csv";
+        String csv_in = "Original Data/jokowi_sort_uniq.csv";
+        String csv_out = "Filtered Data/Formalized&Stemmed/jokowi_sort_uniq.csv";
         
         FormalStemmer fst = new FormalStemmer();
         fst.readCSV(csv_in);
         fst.process();
-        fst.writeCSV(csv_out);
+        fst.writeCSV(csv_out);  
+        
+        System.out.println("Done");
     }
     
 }

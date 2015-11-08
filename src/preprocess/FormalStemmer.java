@@ -5,13 +5,8 @@
  */
 package preprocess;
 
-import IndonesianNLP.IndonesianNETagger;
-import IndonesianNLP.IndonesianPOSTagger;
-import IndonesianNLP.IndonesianPhraseChunker;
 import IndonesianNLP.IndonesianSentenceFormalization;
 import IndonesianNLP.IndonesianStemmer;
-import IndonesianSemanticAnalyzer.*;
-import IndonesianSyntacticParser.CYKParser;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -21,6 +16,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static testStopWord.StopWords.getUnimportantWords;
 
 /**
  *
@@ -67,7 +63,17 @@ public class FormalStemmer {
         }
     }
     
-    public void process() {
+    public String removeSpecialCharacter(String input){
+        // Remove link Remove RT Remove @
+        if(input.contains("RT")){
+            input = input.replace("RT", " ");
+        } 
+        input = input.replaceAll("http.*\\s?", " ");
+        input = input.replaceAll("@.*?\\s", " ");
+        return input;
+    }
+    
+    public void process() throws FileNotFoundException {
         
         IndonesianSentenceFormalization formalizer = new IndonesianSentenceFormalization();
         IndonesianStemmer stemmer = new IndonesianStemmer();
@@ -78,6 +84,7 @@ public class FormalStemmer {
             System.out.println(csvList.get(i)[0]);
             
             String rawContent = csvList.get(i)[0];
+            rawContent = removeSpecialCharacter(rawContent);
             String formalizedContent = formalizer.formalizeSentence(rawContent);
             String stemmedContent = stemmer.stemSentence(formalizedContent);
             
