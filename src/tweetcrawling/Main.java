@@ -42,8 +42,8 @@ public class Main {
     }
     
     public static void main(String args[]) throws IOException, InterruptedException {
-        String csv_out = "/Users/kanya/Dropbox/KANJEISTA/ITB/PERKULIAHAN/IF Semester 7/IF4072 NLP/Text/Tugas 3 Sentiment Analysis/SentimentAnalysis/tweettraining.csv";
-        String[] q = {"flash internet"};
+        String csv_out = "/Users/kanya/Dropbox/KANJEISTA/ITB/PERKULIAHAN/IF Semester 7/IF4072 NLP/Text/Tugas 3 Sentiment Analysis/SentimentAnalysis/tweettest.csv";
+        String[] q = {"first media","fastnet","indihome","biznet","speedy", "innovate", "mnc play", "telkomsel flash", "bolt 4g", "indosatm2", "paketri", "xl axiata"};
         //"first media","fastnet","indihome","biznet","speedy", "innovate", "mnc play", "telkomsel flash", "bolt 4g", "indosatm2", "paketri", "xl axiata"
         
         String OACK = "r3If9nkNITRy9G2SBQpBbPXzL";
